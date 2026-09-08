@@ -6,3 +6,4 @@
 *.swo
 *~
 .env
+flux-deploy-key-prod*
