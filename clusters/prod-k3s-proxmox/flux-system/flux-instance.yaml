@@ -9,7 +9,7 @@ spec:
     registry: ghcr.io/fluxcd
   sync:
     kind: GitRepository
-    url: https://github.com/vikbaranov/gitops-flux-v2
+    url: https://github.com/vikbaranov/gitops-flux-v2.git
     ref: refs/heads/main
     path: clusters/prod-k3s-proxmox
     pullSecret: github
