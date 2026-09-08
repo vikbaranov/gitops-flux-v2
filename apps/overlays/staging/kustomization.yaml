@@ -1,0 +1,6 @@
+# Fleet-wide staging app composition.
+# When you add an application, list its staging overlay here, e.g.:
+#   - ../../my-app/overlays/staging
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []

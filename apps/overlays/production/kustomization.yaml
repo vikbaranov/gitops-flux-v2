@@ -1,0 +1,12 @@
+# Fleet-wide production app composition.
+# Each cluster's `apps` Flux Kustomization points here (or at ./staging).
+#
+# When you add an application, create:
+#   apps/<app>/base
+#   apps/<app>/overlays/production
+#   apps/<app>/overlays/staging
+# then list the production overlay below, e.g.:
+#   - ../../my-app/overlays/production
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []

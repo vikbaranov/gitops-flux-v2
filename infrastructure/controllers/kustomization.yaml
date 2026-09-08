@@ -1,0 +1,11 @@
+# Cluster addon controllers (CRDs + operators). This directory is the
+# `infra-controllers` Flux Kustomization path for every cluster.
+#
+# Add HelmReleases or raw manifests here when you introduce a controller, e.g.:
+#   cert-manager, ingress-nginx / gateway API, external-secrets, monitoring.
+# Prefer a subdirectory per controller with its own kustomization.yaml, then
+# list it under resources. Do not put ClusterIssuers, DNS, or other
+# *configuration* here — those belong in infrastructure/configs.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []

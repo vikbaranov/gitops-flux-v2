@@ -1,0 +1,8 @@
+# Placeholder so cluster roots kustomize-build before bootstrap.
+# `flux bootstrap` replaces this directory with gotk-components.yaml,
+# gotk-sync.yaml, and a kustomization that lists those two files.
+# Do not add cluster apps or infrastructure here — compose them from
+# the parent cluster root (infrastructure.yaml, apps.yaml).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []
