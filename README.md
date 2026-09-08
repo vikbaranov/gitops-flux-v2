@@ -70,7 +70,7 @@ flux bootstrap github \
   --owner=vikbaranov \
   --repository=gitops-flux-v2 \
   --branch=main \
-  --path=clusters/prod-eu-1 \
+  --path=clusters/prod-k3s-proxmox \
   --personal
 ```
 
@@ -94,10 +94,10 @@ helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-opera
 For a private repo, create the pull secret referenced by `FluxInstance.spec.sync.pullSecret` (omit `pullSecret` if the repo is public):
 
 ```bash
-echo "$GITHUB_TOKEN" | flux-operator create secret basic-auth flux-system \
-  --namespace flux-system \
-  --username git \
-  --password-stdin
+kubectl create secret generic github \
+  --namespace=flux-system \
+  --from-literal=username=git \
+  --from-literal=password="${GITHUB_TOKEN}"
 ```
 
 Then apply a `FluxInstance` whose `spec.sync.path` is the cluster composition root:
@@ -110,14 +110,14 @@ metadata:
   namespace: flux-system
 spec:
   distribution:
-    version: "2.8.x"
+    version: "2.x"
     registry: ghcr.io/fluxcd
   sync:
     kind: GitRepository
     url: https://github.com/vikbaranov/gitops-flux-v2
     ref: refs/heads/main
-    path: clusters/prod-eu-1
-    pullSecret: flux-system
+    path: clusters/prod-k3s-proxmox
+    pullSecret: github
 ```
 
 Alternatively, install the operator and instance together with the [Flux Operator CLI](https://fluxoperator.dev/docs/guides/cli/):

@@ -1,0 +1,15 @@
+apiVersion: fluxcd.controlplane.io/v1
+kind: FluxInstance
+metadata:
+  name: flux
+  namespace: flux-system
+spec:
+  distribution:
+    version: "2.x"
+    registry: ghcr.io/fluxcd
+  sync:
+    kind: GitRepository
+    url: https://github.com/vikbaranov/gitops-flux-v2
+    ref: refs/heads/main
+    path: clusters/prod-k3s-proxmox
+    pullSecret: github
