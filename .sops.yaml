@@ -1,0 +1,9 @@
+# .sops.yaml
+creation_rules:
+  # production
+  - path_regex: infrastructure/configs/production/.*\.yaml$
+    encrypted_regex: ^(data|stringData)$
+    age: age1w80auv3csedkn7dnx0dhkf09xuhgaughwngsrcs5w65u9m2m5qlqwck6f2
+  - path_regex: infrastructure/controllers/production/.*\.yaml$
+    encrypted_regex: ^(data|stringData)$
+    age: age1w80auv3csedkn7dnx0dhkf09xuhgaughwngsrcs5w65u9m2m5qlqwck6f2
