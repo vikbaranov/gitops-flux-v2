@@ -1,0 +1,13 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: immich
+  namespace: immich
+spec:
+  interval: 24h
+  url: oci://ghcr.io/immich-app/immich-charts/immich
+  ref:
+    tag: 0.13.1
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
