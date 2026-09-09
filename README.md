@@ -61,29 +61,9 @@ infra-controllers  →  infra-configs  →  apps
 
 `prod-eu-1` uses the `production` overlays; `staging-eu-1` uses `staging`. Both clusters share the same controller catalog.
 
-## Bootstrap Flux on a cluster
+## Bootstrap
 
-Install Flux into the target cluster and point it at this repo. Bootstrap writes `gotk-components.yaml` and `gotk-sync.yaml` under `clusters/<cluster>/flux-system/` and must keep `spec.path` on the cluster composition root (not `infrastructure/` or `apps/` directly).
-
-```bash
-flux bootstrap github \
-  --owner=vikbaranov \
-  --repository=gitops-flux-v2 \
-  --branch=main \
-  --path=clusters/prod-k3s-proxmox \
-  --personal
-```
-
-Use `--path=clusters/staging-eu-1` (and a kubeconfig for that cluster) for staging. Repeat per cluster; each cluster gets its own `flux-system` GitRepository named `flux-system` in namespace `flux-system`.
-
-> [!IMPORTANT]
-> After the first bootstrap, commit the generated `flux-system` files. Do not move implementations into `flux-system/`; keep that directory as Flux's sync machinery.
-
-### Flux Operator (alternative)
-
-This layout is compatible with [Flux Operator](https://fluxoperator.dev/). The operator installs Flux controllers from a `FluxInstance` instead of committing `gotk-components.yaml`. Do not run `flux bootstrap` on the same cluster.
-
-Install the operator into `flux-system` (Helm is the documented production path; see the [install guide](https://fluxoperator.dev/docs/guides/install/) for Terraform, OLM, and kubectl):
+Install the operator into `flux-system`, see the [install guide](https://fluxoperator.dev/docs/guides/install/) :
 
 ```bash
 helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator \
@@ -91,13 +71,26 @@ helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-opera
   --create-namespace
 ```
 
-For a private repo, create the pull secret referenced by `FluxInstance.spec.sync.pullSecret` (omit `pullSecret` if the repo is public):
+For a private repo, create the pull secret referenced by `FluxInstance.spec.sync.pullSecret`:
 
 ```bash
 kubectl create secret generic github \
   --namespace=flux-system \
   --from-literal=username=git \
   --from-literal=password="${GITHUB_TOKEN}"
+```
+
+Create an age key file for SOPS:
+
+```bash
+age-keygen -o clusters/prod-k3s-proxmox/age.key
+```
+
+Create a secret:
+```bash
+kubectl create secret generic sops-age \
+  --namespace=flux-system \
+  --from-file=sops.agekey="clusters/prod-k3s-proxmox/age.key"
 ```
 
 Then apply a `FluxInstance` whose `spec.sync.path` is the cluster composition root:
@@ -119,30 +112,6 @@ spec:
     path: clusters/prod-k3s-proxmox
     pullSecret: github
 ```
-
-Alternatively, install the operator and instance together with the [Flux Operator CLI](https://fluxoperator.dev/docs/guides/cli/):
-
-```bash
-brew install controlplaneio-fluxcd/tap/flux-operator
-flux-operator install -f flux-instance.yaml
-```
-
-The operator creates a `GitRepository` and `Kustomization` named `flux-system` in namespace `flux-system` — the same names `flux bootstrap` uses, so `infrastructure.yaml` and `apps.yaml` keep working. Do not commit Flux controller manifests into `clusters/<cluster>/flux-system/`; keep that cluster root as a thin list of Flux Kustomizations. You can migrate a bootstrapped cluster to Operator later because the naming matches.
-
-## Add a cluster
-
-1. Copy an existing composition root whose environment matches the new cluster (or start from `clusters/staging-eu-1`):
-
-   ```bash
-   cp -R clusters/staging-eu-1 clusters/<cluster-name>
-   ```
-
-2. Keep `infrastructure.yaml` pointing at `./infrastructure/controllers` and at the right configs overlay (`production` or `staging`).
-3. Keep `apps.yaml` pointing at `./apps/overlays/<env>`.
-4. Bootstrap with `--path=clusters/<cluster-name>`.
-5. If the cluster needs unique patches, add them as Kustomize patches on the Flux Kustomizations in that cluster root — do not fork `infrastructure/controllers` into the cluster directory.
-
-Name clusters after the instance (`prod-eu-1`, `staging-eu-1`, later `prod-us-1`), not after the environment folder (`clusters/production`).
 
 ## Add infrastructure
 
