@@ -31,8 +31,6 @@ spec:
               # renovate: datasource=docker depName=ghcr.io/immich-app/immich-server versioning=semver
               tag: v3.1.0
             env:
-              REDIS_HOSTNAME: '{{ printf "%s-valkey" .Release.Name }}'
-              IMMICH_MACHINE_LEARNING_URL: '{{ printf "http://%s-machine-learning:3003" .Release.Name }}'
               DB_URL:
                 valueFrom:
                   secretKeyRef:
@@ -42,19 +40,3 @@ spec:
       persistence:
         library:
           existingClaim: immich-library-pvc
-    machine-learning:
-      persistence:
-        tmp:
-          type: emptyDir
-    valkey:
-      enabled: true
-      controllers:
-        main:
-          containers:
-            main:
-      persistence:
-        data:
-          enabled: true
-          size: 1Gi
-          type: emptyDir
-          accessMode: ReadWriteOnce
