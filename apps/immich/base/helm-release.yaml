@@ -55,13 +55,16 @@ spec:
           existingClaim: immich-library-pvc
     valkey:
       enabled: true
+      controllers:
+        main:
+          containers:
+            main:
       persistence:
         data:
           enabled: true
-          type: persistentVolumeClaim
           size: 1Gi
+          type: emptyDir
           accessMode: ReadWriteOnce
-          storageClass: local-path
     server:
       route:
         main:
@@ -75,9 +78,5 @@ spec:
             - immich.${cluster_subdomain}
     machine-learning:
       persistence:
-        cache:
-          enabled: true
-          type: persistentVolumeClaim
-          size: 5Gi
-          accessMode: ReadWriteOnce
-          storageClass: local-path
+        tmp:
+          type: emptyDir
