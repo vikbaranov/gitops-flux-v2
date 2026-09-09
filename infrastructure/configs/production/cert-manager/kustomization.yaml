@@ -4,3 +4,4 @@ resources:
   - cluster-issuer.yaml
   - cluster-certificate.yaml
   - cloudflare-api-token.yaml
+  - reference-grant.yaml

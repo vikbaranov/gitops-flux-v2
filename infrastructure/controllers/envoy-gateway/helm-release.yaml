@@ -1,0 +1,38 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: envoy-gateway
+  namespace: envoy-gateway-system
+spec:
+  interval: 15m
+  timeout: 5m
+  releaseName: envoy-gateway
+  dependsOn:
+    - name: cert-manager
+      namespace: cert-manager
+  chartRef:
+    kind: OCIRepository
+    name: envoy-gateway
+  install:
+    crds: Create
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: enabled
+  values:
+    crds:
+      enabled: true
+    config:
+      envoyGateway:
+        gateway:
+          controllerName: gateway.envoyproxy.io/gatewayclass-controller
+        provider:
+          type: Kubernetes
+        telemetry:
+          metrics:
+            prometheus:
+              disable: false
