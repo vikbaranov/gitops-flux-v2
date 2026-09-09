@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: local-path-config
   namespace: kube-system
+  labels:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
 data:
   config.json: |-
     {
