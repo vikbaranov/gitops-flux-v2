@@ -40,3 +40,5 @@ spec:
       persistence:
         library:
           existingClaim: immich-library-pvc
+    valkey:
+      enabled: true
