@@ -7,3 +7,4 @@ resources:
   - cnpg-database.yaml
   - oci-repository.yaml
   - helm-release.yaml
+  - http-route.yaml
