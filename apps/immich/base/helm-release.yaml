@@ -27,32 +27,25 @@ spec:
         containers:
           main:
             image:
+              repository: ghcr.io/immich-app/immich-server
+              # renovate: datasource=docker depName=ghcr.io/immich-app/immich-server versioning=semver
               tag: v3.1.0
             env:
-              DB_HOSTNAME:
+              REDIS_HOSTNAME: '{{ printf "%s-valkey" .Release.Name }}'
+              IMMICH_MACHINE_LEARNING_URL: '{{ printf "http://%s-machine-learning:3003" .Release.Name }}'
+              DB_URL:
                 valueFrom:
                   secretKeyRef:
                     name: immich-database-app
-                    key: host
-              DB_USERNAME:
-                valueFrom:
-                  secretKeyRef:
-                    name: immich-database-app
-                    key: user
-              DB_PASSWORD:
-                valueFrom:
-                  secretKeyRef:
-                    name: immich-database-app
-                    key: password
-              DB_DATABASE_NAME:
-                valueFrom:
-                  secretKeyRef:
-                    name: immich-database-app
-                    key: dbname
+                    key: uri
     immich:
       persistence:
         library:
           existingClaim: immich-library-pvc
+    machine-learning:
+      persistence:
+        tmp:
+          type: emptyDir
     valkey:
       enabled: true
       controllers:
@@ -65,18 +58,3 @@ spec:
           size: 1Gi
           type: emptyDir
           accessMode: ReadWriteOnce
-    server:
-      route:
-        main:
-          enabled: true
-          kind: HTTPRoute
-          parentRefs:
-            - name: internal
-              namespace: envoy-gateway-system
-              sectionName: https
-          hostnames:
-            - immich.${cluster_subdomain}
-    machine-learning:
-      persistence:
-        tmp:
-          type: emptyDir
