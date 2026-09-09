@@ -16,3 +16,8 @@ spec:
   path: ./apps/overlays/production
   prune: true
   wait: true
+  postBuild:
+    substitute:
+      env: "prod"
+      cluster_name: "prod-k3s-proxmox"
+      cluster_subdomain: "prod.sleepfox.ru"

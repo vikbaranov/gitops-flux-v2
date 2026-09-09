@@ -18,6 +18,11 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
+  postBuild:
+    substitute:
+      env: "prod"
+      cluster_name: "prod-k3s-proxmox"
+      cluster_subdomain: "prod.sleepfox.ru"
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -40,3 +45,8 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
+  postBuild:
+    substitute:
+      env: "prod"
+      cluster_name: "prod-k3s-proxmox"
+      cluster_subdomain: "prod.sleepfox.ru"
