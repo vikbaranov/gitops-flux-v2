@@ -20,4 +20,4 @@ spec:
     substitute:
       env: "prod"
       cluster_name: "prod-k3s-proxmox"
-      cluster_subdomain: "prod.sleepfox.ru"
+      cluster_subdomain: "apps.sleepfox.ru"
