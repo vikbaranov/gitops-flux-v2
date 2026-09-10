@@ -51,6 +51,11 @@ spec:
                   secretKeyRef:
                     name: immich-database-app
                     key: port
+              DB_DATABASE_NAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-database-app
+                    key: dbname
     immich:
       persistence:
         library:
