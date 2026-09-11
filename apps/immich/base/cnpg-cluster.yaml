@@ -8,7 +8,7 @@ spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18-standard-trixie
   storage:
     size: 5Gi
-    storageClass: local-path
+    storageClass: topolvm-provisioner
   postgresql:
     shared_preload_libraries:
       - "vchord.so"
