@@ -1,0 +1,66 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  interval: 15m
+  timeout: 5m
+  releaseName: vaultwarden
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: cnpg-system
+  chart:
+    spec:
+      chart: vaultwarden
+      sourceRef:
+        kind: HelmRepository
+        name: vaultwarden
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: enabled
+  values:
+    timeZone: Europe/Moscow
+    database:
+      type: postgresql
+      existingSecret: vaultwarden-db-app
+      existingSecretKey: uri
+    serviceAccount:
+      create: true
+      name: vaultwarden-svc
+    signupsAllowed: false
+    resources:
+      limits:
+        cpu: 300m
+        memory: 300Mi
+      requests:
+        cpu: 50m
+        memory: 150Mi
+    storage:
+      data:
+        name: data
+        size: 1Gi
+        path: /data
+        keepPvc: true
+        accessMode: ReadWriteOnce
+    securityContext:
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsGroup: 1001
+      runAsUser: 1001
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    podSecurityContext:
+      fsGroup: 1001
+      supplementalGroups:
+        - 1001

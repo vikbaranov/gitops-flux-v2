@@ -28,8 +28,6 @@ spec:
           main:
             image:
               repository: ghcr.io/immich-app/immich-server
-              # renovate: datasource=docker depName=ghcr.io/immich-app/immich-server versioning=semver
-              tag: v3.1.0
             env:
               DB_USERNAME:
                 valueFrom:

@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  chart:
+    spec:
+      version: "0.46.2"
+  values:
+    domain: https://vaultwarden.${cluster_subdomain}
+    storage:
+      data:
+        size: 1Gi
+        class: ${storage_class}

@@ -6,8 +6,6 @@ metadata:
 spec:
   interval: 24h
   url: oci://docker.io/envoyproxy/gateway-helm
-  ref:
-    tag: v1.9.1
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy

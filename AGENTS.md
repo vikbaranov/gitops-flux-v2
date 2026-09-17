@@ -30,8 +30,8 @@ Do not point a Flux Kustomization at a path that contains another Flux Kustomiza
 ## Invariants
 
 - **Base has no cluster identity.** Domain, LB IP, storage class, node paths, Cloudflare tokens stay in overlay or `flux-vars`.
-- **Versions live on the base** (`OCIRepository.spec.ref.tag`, Helm image tag). No `pins.yaml`, no bundles.
-- **Overlay subdir only if there is a delta.** Otherwise list `../base/<name>` from the cluster kustomization. Empty include-only folders are wrong.
+- **Versions live in the cluster overlay** (`OCIRepository.spec.ref.tag`, Helm `chart.spec.version`, image tags). Base has chart/source wiring without pins. No `pins.yaml`, no bundles.
+- **Overlay subdir only if there is a delta** (including version pins). Otherwise list `../base/<name>` from the cluster kustomization. Empty include-only folders are wrong.
 - **Patches are full YAML** (strategic merge), not JSON6902.
 - **Helm charts use `chartRef` + `OCIRepository`**, not `HelmRepository` with `type: oci`.
 - **`flux-vars` is cluster facts only** (`cluster_subdomain`, `cluster_lb_ip`, `storage_class`). App values belong in `apps/<cluster>/<app>/`.
@@ -40,15 +40,14 @@ Do not point a Flux Kustomization at a path that contains another Flux Kustomiza
 
 ## Add an operator
 
-1. `infrastructure/controllers/base/<name>/` — namespace, OCIRepository (pin tag), HelmRelease (`chartRef`).
+1. `infrastructure/controllers/base/<name>/` — namespace, OCIRepository (no tag), HelmRelease (`chartRef`).
 2. CRs → `infrastructure/configs/base/<name>/` with `${cluster_subdomain}` / `${cluster_lb_ip}` where needed.
-3. Enable it: `../base/<name>` in `infrastructure/controllers/<cluster>/kustomization.yaml`.
-4. Cluster Helm extraArgs or secrets → `infrastructure/controllers/<cluster>/<name>/` or `infrastructure/configs/<cluster>/<name>/`, then list that local dir instead of `../base/<name>`.
+3. Enable it: cluster overlay dir with version pin (and any Helm patches), listed from `infrastructure/controllers/<cluster>/kustomization.yaml`. If the only delta is versions, still use a local dir — do not pin on base.
 
 ## Add an app
 
-1. `apps/base/<app>/` — namespace, OCIRepository (pin tag), HelmRelease, default PVC/CNPG if any.
-2. `apps/<cluster>/<app>/` includes `../../base/<app>` plus cluster resources/patches.
+1. `apps/base/<app>/` — namespace, OCIRepository/HelmRepository, HelmRelease, default PVC/CNPG if any (no chart/image pins).
+2. `apps/<cluster>/<app>/` includes `../../base/<app>` plus version pins, cluster resources, and patches.
 3. List `<app>` in `apps/<cluster>/kustomization.yaml`.
 
 ## Add a cluster

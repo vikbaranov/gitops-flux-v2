@@ -1,0 +1,8 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: envoy-gateway
+  namespace: envoy-gateway-system
+spec:
+  ref:
+    tag: v1.9.1

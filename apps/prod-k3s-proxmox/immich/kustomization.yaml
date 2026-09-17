@@ -6,3 +6,5 @@ resources:
 patches:
   - path: pvc.yaml
   - path: cnpg-cluster.yaml
+  - path: oci-repository.yaml
+  - path: helm-release.yaml

@@ -6,9 +6,11 @@ Layout follows the Flux [repository structure](https://fluxcd.io/flux/guides/rep
 .
 ├── apps/
 │   ├── base/
-│   │   └── immich/
+│   │   ├── immich/
+│   │   └── vaultwarden/
 │   ├── prod-k3s-proxmox/
-│   │   └── immich/                 # HTTPRoute, PVC/CNPG patches
+│   │   ├── immich/                 # HTTPRoute, PVC/CNPG patches
+│   │   └── vaultwarden/
 │   └── staging-eu-1/
 ├── infrastructure/
 │   ├── controllers/
@@ -23,20 +25,20 @@ Layout follows the Flux [repository structure](https://fluxcd.io/flux/guides/rep
 │       ├── base/
 │       │   ├── cert-manager/
 │       │   └── envoy-gateway/
-│       ├── prod-k3s-proxmox/       # Cloudflare token, local-path
+│       ├── prod-k3s-proxmox/       # Cloudflare token, vaultwarden admin
 │       └── staging-eu-1/
 └── clusters/
     ├── prod-k3s-proxmox/           # FluxInstance, flux-vars, Kustomization CRs
     └── staging-eu-1/
 ```
 
-Overlay dirs are named after the cluster, not `production` / `staging`. Chart and image tags live on the base `OCIRepository` and Helm values.
+Overlay dirs are named after the cluster, not `production` / `staging`. Chart and image tags live in the cluster overlay.
 
 ## Update strategy
 
-[Renovate](https://docs.renovatebot.com/) opens PRs when versions on the base change:
+[Renovate](https://docs.renovatebot.com/) opens PRs when versions in a cluster overlay change:
 
-- Chart tags on `OCIRepository` (`spec.ref.tag`)
+- Chart tags on `OCIRepository` (`spec.ref.tag`) and Helm `chart.spec.version`
 - Container image tags annotated with `# renovate: datasource=docker`
 
 ```text
@@ -58,7 +60,7 @@ infra-controllers  →  infra-configs  →  apps
 | `infra-configs` | `./infrastructure/configs/<cluster>` |
 | `apps` | `./apps/<cluster>` |
 
-`prod-k3s-proxmox` includes cert-manager, CNPG, Envoy Gateway, TopoLVM, cert-manager DNS patch, shared configs, Cloudflare token, and Immich. `staging-eu-1` includes cert-manager, CNPG, and Envoy Gateway.
+`prod-k3s-proxmox` includes cert-manager, CNPG, Envoy Gateway, TopoLVM, cert-manager DNS patch, shared configs, Cloudflare token, Immich, and Vaultwarden. `staging-eu-1` includes cert-manager, CNPG, and Envoy Gateway.
 
 ## Prerequisites
 
@@ -122,14 +124,14 @@ spec:
 
 ## Add infrastructure
 
-1. Operator base: `infrastructure/controllers/base/<name>/` (namespace, HelmRelease, OCIRepository). Pin the chart tag on the OCIRepository.
+1. Operator base: `infrastructure/controllers/base/<name>/` (namespace, HelmRelease, OCIRepository without tag).
 2. CR bases: `infrastructure/configs/base/<name>/`. Use `${cluster_subdomain}` / `${cluster_lb_ip}` from `flux-vars`.
-3. List the operator in `infrastructure/controllers/<cluster>/kustomization.yaml` as `../base/<name>`. Add `infrastructure/controllers/<cluster>/<name>/` only when that cluster needs a patch. Same for configs.
+3. Enable via `infrastructure/controllers/<cluster>/<name>/` with the chart tag pin (and any Helm patches). List that local dir from the cluster kustomization.
 
 ## Add an application
 
-1. Create `apps/base/<app>/` with the HelmRelease (and namespace/source). Pin chart and image tags there.
-2. Add `apps/<cluster>/<app>/` with cluster resources and patches (HTTPRoute, PVC size).
+1. Create `apps/base/<app>/` with the HelmRelease (and namespace/source), without chart/image pins.
+2. Add `apps/<cluster>/<app>/` with version pins, cluster resources, and patches (HTTPRoute, PVC size).
 3. List that directory in `apps/<cluster>/kustomization.yaml`.
 
 ## Split team app repos later
@@ -153,4 +155,5 @@ kustomize build apps/staging-eu-1
 kustomize build infrastructure/controllers/base/cert-manager
 kustomize build infrastructure/configs/base/cert-manager
 kustomize build apps/base/immich
+kustomize build apps/base/vaultwarden
 ```
