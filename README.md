@@ -32,6 +32,17 @@ Layout follows the Flux [repository structure](https://fluxcd.io/flux/guides/rep
 
 Overlay dirs are named after the cluster, not `production` / `staging`. Chart and image tags live on the base `OCIRepository` and Helm values.
 
+## Update strategy
+
+[Renovate](https://docs.renovatebot.com/) opens PRs when versions on the base change:
+
+- Chart tags on `OCIRepository` (`spec.ref.tag`)
+- Container image tags annotated with `# renovate: datasource=docker`
+
+```text
+Renovate detects a new tag → Opens a PR → Review & merge → Flux reconciles the cluster
+```
+
 ## How a cluster is composed
 
 Flux reconciles `clusters/<cluster>` (FluxInstance `spec.sync.path`). That directory only emits Flux objects and `flux-vars`. Nested Flux Kustomizations pull the overlays:
