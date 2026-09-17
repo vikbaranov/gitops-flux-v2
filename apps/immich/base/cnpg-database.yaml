@@ -4,8 +4,10 @@ metadata:
   name: immich-database
   namespace: immich
 spec:
+  ensure: present
   name: app
   owner: app
+  databaseReclaimPolicy: retain
   cluster:
     name: immich-database
   extensions:
@@ -16,4 +18,10 @@ spec:
     - name: earthdistance
       ensure: present
     - name: cube
+      ensure: present
+    - name: pg_trgm
+      ensure: present
+    - name: unaccent
+      ensure: present
+    - name: uuid-ossp
       ensure: present
