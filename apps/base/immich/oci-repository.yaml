@@ -7,7 +7,7 @@ spec:
   interval: 24h
   url: oci://ghcr.io/immich-app/immich-charts/immich
   ref:
-    tag: 0.13.1
+    tag: 0.13.2
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
