@@ -11,18 +11,13 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/controllers
+  path: ./infrastructure/controllers/prod-k3s-proxmox
   prune: true
   wait: true
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
   postBuild:
-    substitute:
-      env: "prod"
-      cluster_name: "prod-k3s-proxmox"
-      cluster_subdomain: "apps.sleepfox.ru"
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-vars
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -38,7 +33,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/configs/production
+  path: ./infrastructure/configs/prod-k3s-proxmox
   prune: true
   wait: true
   decryption:
@@ -46,7 +41,6 @@ spec:
     secretRef:
       name: sops-age
   postBuild:
-    substitute:
-      env: "prod"
-      cluster_name: "prod-k3s-proxmox"
-      cluster_subdomain: "apps.sleepfox.ru"
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-vars

@@ -1,69 +1,67 @@
 # FluxCD fleet monorepo
 
-This repository **is** the fleet-infra repo. It holds cluster composition roots and the shared infrastructure/app pieces those roots assemble. It does not nest content under a `fleet-infra/` subdirectory.
-
-Each cluster describes *what* it contains. Implementations live under `infrastructure/` and `apps/`, so you compose a new cluster from existing pieces instead of copying controllers or workloads into `clusters/<name>/`.
-
-## Repository structure
+Layout follows the Flux [repository structure](https://fluxcd.io/flux/guides/repository-structure/) and [flux2-kustomize-helm-example](https://github.com/fluxcd/flux2-kustomize-helm-example): shared `apps/` and `infrastructure/`, with a thin `clusters/` dir that only holds Flux objects.
 
 ```text
 .
-├── clusters/
-│   ├── prod-eu-1/              # composition root for one production cluster
-│   │   ├── flux-system/        # Flux bootstrap (gotk files appear after `flux bootstrap`)
-│   │   ├── infrastructure.yaml # Flux Kustomizations: controllers → configs
-│   │   ├── apps.yaml           # Flux Kustomization: applications
-│   │   └── kustomization.yaml  # composes flux-system + the Flux Kustomizations above
+├── apps/
+│   ├── base/
+│   │   └── immich/
+│   ├── prod-k3s-proxmox/
+│   │   └── immich/                 # HTTPRoute, PVC/CNPG patches
 │   └── staging-eu-1/
 ├── infrastructure/
-│   ├── controllers/            # cluster addons (cert-manager, ingress, …)
+│   ├── controllers/
+│   │   ├── base/
+│   │   │   ├── cert-manager/
+│   │   │   ├── cloudnative-pg/
+│   │   │   ├── envoy-gateway/
+│   │   │   └── topolvm/
+│   │   ├── prod-k3s-proxmox/       # which operators + Helm patches
+│   │   └── staging-eu-1/
 │   └── configs/
-│       ├── base/               # shared config
-│       ├── production/         # production overlay (includes base)
-│       └── staging/            # staging overlay (includes base)
-└── apps/
-    ├── overlays/
-    │   ├── production/         # fleet-wide list of app production overlays
-    │   └── staging/
-    └── <app>/                  # add when you have a real workload
-        ├── base/
-        └── overlays/{production,staging}/
+│       ├── base/
+│       │   ├── cert-manager/
+│       │   └── envoy-gateway/
+│       ├── prod-k3s-proxmox/       # Cloudflare token, local-path
+│       └── staging-eu-1/
+└── clusters/
+    ├── prod-k3s-proxmox/           # FluxInstance, flux-vars, Kustomization CRs
+    └── staging-eu-1/
 ```
 
-Environment, region, and provider are **config dimensions** under `infrastructure/configs/` and `apps/*/overlays/`. They are not the top-level cluster hierarchy.
-
-## Prerequisites
-
-- A Kubernetes cluster per fleet member (kubeconfig pointed at the cluster you bootstrap)
-- [Flux CLI](https://fluxcd.io/flux/installation/) v2 (this skeleton uses `kustomize.toolkit.fluxcd.io/v1`)
-- [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/) for local `kustomize build` checks
-- Permission to create a deploy key (or PAT) on `vikbaranov/gitops-flux-v2` for bootstrap
-
-> [!NOTE]
-> There is no `policies/` or `tenants/` tree yet. Add those layers only when you have real Kyverno/OPA policies or multi-tenant onboarding to place there.
+Overlay dirs are named after the cluster, not `production` / `staging`. Chart and image tags live on the base `OCIRepository` and Helm values.
 
 ## How a cluster is composed
 
-Flux bootstraps a cluster by reconciling `clusters/<cluster>` (the `flux-system` GitRepository Kustomization created by bootstrap). That directory is a native Kustomize root: it includes `flux-system/` plus Flux `Kustomization` objects that pull in the rest of the fleet.
-
-Reconciliation order uses `spec.dependsOn`:
+Flux reconciles `clusters/<cluster>` (FluxInstance `spec.sync.path`). That directory only emits Flux objects and `flux-vars`. Nested Flux Kustomizations pull the overlays:
 
 ```text
 infra-controllers  →  infra-configs  →  apps
      (30m, wait)         (30m, wait)      (10m)
 ```
 
-| Flux Kustomization | Path | Role |
-| --- | --- | --- |
-| `infra-controllers` | `./infrastructure/controllers` | Operators and CRDs |
-| `infra-configs` | `./infrastructure/configs/<env>` | ClusterIssuers, storage, DNS, other config |
-| `apps` | `./apps/overlays/<env>` | Workloads for that environment |
+| Flux Kustomization | Path |
+| --- | --- |
+| `infra-controllers` | `./infrastructure/controllers/<cluster>` |
+| `infra-configs` | `./infrastructure/configs/<cluster>` |
+| `apps` | `./apps/<cluster>` |
 
-`prod-eu-1` uses the `production` overlays; `staging-eu-1` uses `staging`. Both clusters share the same controller catalog.
+`prod-k3s-proxmox` includes cert-manager, CNPG, Envoy Gateway, TopoLVM, cert-manager DNS patch, shared configs, Cloudflare token, and Immich. `staging-eu-1` includes cert-manager, CNPG, and Envoy Gateway.
+
+## Prerequisites
+
+- A Kubernetes cluster per fleet member
+- [Flux CLI](https://fluxcd.io/flux/installation/) v2 (`kustomize.toolkit.fluxcd.io/v1`)
+- [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/) for local `kustomize build`
+- Permission to create a deploy key (or PAT) on `vikbaranov/gitops-flux-v2`
+
+> [!NOTE]
+> There is no `policies/` or `tenants/` tree yet. Add those layers only when you have real Kyverno/OPA policies or multi-tenant onboarding.
 
 ## Bootstrap
 
-Install the operator into `flux-system`, see the [install guide](https://fluxoperator.dev/docs/guides/install/) :
+Install the operator, see the [install guide](https://fluxoperator.dev/docs/guides/install/):
 
 ```bash
 helm install flux-operator oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator \
@@ -80,14 +78,10 @@ kubectl create secret generic github \
   --from-literal=password="${GITHUB_TOKEN}"
 ```
 
-Create an age key file for SOPS:
+Create an age key and SOPS secret:
 
 ```bash
 age-keygen -o clusters/prod-k3s-proxmox/age.key
-```
-
-Create a secret:
-```bash
 kubectl create secret generic sops-age \
   --namespace=flux-system \
   --from-file=sops.agekey="clusters/prod-k3s-proxmox/age.key"
@@ -102,6 +96,8 @@ metadata:
   name: flux
   namespace: flux-system
 spec:
+  cluster:
+    size: small
   distribution:
     version: "2.x"
     registry: ghcr.io/fluxcd
@@ -115,48 +111,35 @@ spec:
 
 ## Add infrastructure
 
-**Controllers** (operators): add a subdirectory under `infrastructure/controllers/` with a `kustomization.yaml` (HelmRelease, namespace, HelmRepository as needed) and list it in `infrastructure/controllers/kustomization.yaml`. Every cluster picks it up on the next reconcile.
-
-**Config** (CRs that need those operators): put shared objects in `infrastructure/configs/base/` and env-specific patches in `infrastructure/configs/production/` or `staging/`.
+1. Operator base: `infrastructure/controllers/base/<name>/` (namespace, HelmRelease, OCIRepository). Pin the chart tag on the OCIRepository.
+2. CR bases: `infrastructure/configs/base/<name>/`. Use `${cluster_subdomain}` / `${cluster_lb_ip}` from `flux-vars`.
+3. List the operator in `infrastructure/controllers/<cluster>/kustomization.yaml` as `../base/<name>`. Add `infrastructure/controllers/<cluster>/<name>/` only when that cluster needs a patch. Same for configs.
 
 ## Add an application
 
-1. Create the app tree:
-
-   ```text
-   apps/<app>/base/kustomization.yaml
-   apps/<app>/overlays/production/kustomization.yaml
-   apps/<app>/overlays/staging/kustomization.yaml
-   ```
-
-2. Register the env overlay in the fleet composition:
-
-   - `apps/overlays/production/kustomization.yaml` → `../../<app>/overlays/production`
-   - `apps/overlays/staging/kustomization.yaml` → `../../<app>/overlays/staging`
-
-Prefer empty-but-valid Kustomize bases and real HelmReleases/manifests over sample nginx Deployments.
+1. Create `apps/base/<app>/` with the HelmRelease (and namespace/source). Pin chart and image tags there.
+2. Add `apps/<cluster>/<app>/` with cluster resources and patches (HTTPRoute, PVC size).
+3. List that directory in `apps/<cluster>/kustomization.yaml`.
 
 ## Split team app repos later
 
-This monorepo can keep platform pieces while application ownership moves out:
-
-1. Move `apps/<app>/` into a team repository (same `base/` + `overlays/` layout).
-2. In this fleet repo, replace the in-repo overlay entry with a Flux `GitRepository` (or OCIRepository) plus a `Kustomization` whose `sourceRef` points at that repo and whose `path` is the env overlay.
-3. Keep `dependsOn: infra-configs` so apps still wait for cluster addons.
-4. Leave cluster composition roots in this repository; they remain the inventory of what each cluster runs.
-
-You do not need ArtifactGenerator/ExternalArtifact for that split.
+1. Move `apps/base/<app>/` into a team repository.
+2. In this fleet repo, replace the include with a Flux `GitRepository` (or OCIRepository) plus a `Kustomization` whose `path` is the cluster overlay.
+3. Keep `dependsOn: infra-configs`.
+4. Leave cluster composition roots here.
 
 ## Validate locally
 
 ```bash
-kustomize build clusters/prod-eu-1
+kustomize build clusters/prod-k3s-proxmox
 kustomize build clusters/staging-eu-1
-kustomize build infrastructure/controllers
-kustomize build infrastructure/configs/production
-kustomize build infrastructure/configs/staging
-kustomize build apps/overlays/production
-kustomize build apps/overlays/staging
+kustomize build infrastructure/controllers/prod-k3s-proxmox
+kustomize build infrastructure/configs/prod-k3s-proxmox
+kustomize build apps/prod-k3s-proxmox
+kustomize build infrastructure/controllers/staging-eu-1
+kustomize build infrastructure/configs/staging-eu-1
+kustomize build apps/staging-eu-1
+kustomize build infrastructure/controllers/base/cert-manager
+kustomize build infrastructure/configs/base/cert-manager
+kustomize build apps/base/immich
 ```
-
-After bootstrap, `kustomize build clusters/<cluster>` also emits Flux controllers from `gotk-components.yaml`.

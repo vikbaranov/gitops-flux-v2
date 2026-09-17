@@ -13,11 +13,10 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./apps/overlays/production
+  path: ./apps/prod-k3s-proxmox
   prune: true
   wait: true
   postBuild:
-    substitute:
-      env: "prod"
-      cluster_name: "prod-k3s-proxmox"
-      cluster_subdomain: "apps.sleepfox.ru"
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-vars

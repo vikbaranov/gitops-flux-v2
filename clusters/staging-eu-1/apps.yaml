@@ -13,6 +13,10 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./apps/overlays/staging
+  path: ./apps/staging-eu-1
   prune: true
   wait: true
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: flux-vars

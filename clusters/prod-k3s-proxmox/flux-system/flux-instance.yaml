@@ -4,6 +4,8 @@ metadata:
   name: flux
   namespace: flux-system
 spec:
+  cluster:
+    size: small
   distribution:
     version: "2.8.x"
     registry: ghcr.io/fluxcd

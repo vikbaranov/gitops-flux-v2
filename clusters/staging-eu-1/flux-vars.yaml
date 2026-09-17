@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flux-vars
+  namespace: flux-system
+  labels:
+    reconcile.fluxcd.io/watch: Enabled
+data:
+  cluster_name: staging-eu-1
+  cluster_subdomain: staging.local
+  storage_class: local-path
