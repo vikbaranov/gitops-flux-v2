@@ -4,3 +4,4 @@ resources:
   - helm-repo.yaml
   - cnpg-cluster.yaml
   - helm-release.yaml
+  - namespace.yaml
