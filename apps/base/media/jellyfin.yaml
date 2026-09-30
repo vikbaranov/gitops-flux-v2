@@ -1,0 +1,50 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  interval: 15m
+  timeout: 5m
+  releaseName: jellyfin
+  chart:
+    spec:
+      chart: app-template
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: enabled
+  values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: jellyfin/jellyfin
+    service:
+      main:
+        ports:
+          http:
+            port: 8096
+    persistence:
+      config:
+        enabled: true
+        size: 1Gi
+        mountPath: /config
+      media:
+        enabled: true
+        existingClaim: media-library-pvc
+        mountPath: /media
+    resources:
+      requests:
+        cpu: 100m
+        memory: 300Mi
+      limits:
+        memory: 4Gi

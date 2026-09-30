@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base/media
+patches:
+  - path: media-pvc.yaml
+  - path: downloads-pvc.yaml
+  - path: jellyfin.yaml
+  - path: sonarr.yaml
+  - path: radarr.yaml
+  - path: qbittorrent.yaml
+  - path: seerr.yaml

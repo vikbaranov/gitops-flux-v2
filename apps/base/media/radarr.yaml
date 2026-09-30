@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: radarr
+  namespace: media
+spec:
+  interval: 15m
+  timeout: 5m
+  releaseName: radarr
+  chart:
+    spec:
+      chart: app-template
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: enabled
+  values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: lscr.io/linuxserver/radarr
+            env:
+              PUID: "1000"
+              PGID: "1000"
+              TZ: Europe/Moscow
+    service:
+      main:
+        ports:
+          http:
+            port: 7878
+    persistence:
+      config:
+        enabled: true
+        size: 1Gi
+        mountPath: /config
+      media:
+        enabled: true
+        existingClaim: media-library-pvc
+        mountPath: /movies
+      downloads:
+        enabled: true
+        existingClaim: media-downloads-pvc
+        mountPath: /downloads
+    resources:
+      requests:
+        cpu: 50m
+        memory: 200Mi
+      limits:
+        memory: 500Mi
