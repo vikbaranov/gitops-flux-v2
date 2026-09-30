@@ -8,6 +8,12 @@ spec:
     spec:
       version: "5.2.1"
   values:
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              tag: latest
     persistence:
       config:
         storageClass: ${storage_class}

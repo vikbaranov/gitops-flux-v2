@@ -40,16 +40,21 @@ spec:
     persistence:
       config:
         enabled: true
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
         size: 1Gi
-        mountPath: /config
+        globalMounts:
+          - path: /config
       media:
         enabled: true
         existingClaim: media-library-pvc
-        mountPath: /movies
+        globalMounts:
+          - path: /movies
       downloads:
         enabled: true
         existingClaim: media-downloads-pvc
-        mountPath: /downloads
+        globalMounts:
+          - path: /downloads
     resources:
       requests:
         cpu: 50m
