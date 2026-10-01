@@ -13,11 +13,12 @@ spec:
           enabled: true
           org_role: Admin
     vmsingle:
-      storage:
-        storageClassName: ${storage_class}
-        resources:
-          requests:
-            storage: 3Gi
+      spec:
+        storage:
+          storageClassName: ${storage_class}
+          resources:
+            requests:
+              storage: 3Gi
       route:
         enabled: true
         parentRefs:
