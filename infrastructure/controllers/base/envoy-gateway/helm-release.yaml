@@ -14,18 +14,18 @@ spec:
     kind: OCIRepository
     name: envoy-gateway
   install:
-    crds: Skip
+    crds: Create
     remediation:
       retries: 3
   upgrade:
-    crds: Skip
+    crds: CreateReplace
     remediation:
       retries: 3
   driftDetection:
     mode: enabled
   values:
     crds:
-      enabled: false
+      enabled: true
     config:
       envoyGateway:
         gateway:
