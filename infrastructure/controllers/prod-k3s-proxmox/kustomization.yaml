@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - cert-manager
   - cloudnative-pg
-  - envoy-gateway
+  # - envoy-gateway
   - cilium
   # - victoria-metrics-k8s-stack
   - ../base/topolvm
