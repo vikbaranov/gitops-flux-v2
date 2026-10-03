@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - ../../base/cert-manager
 patches:
-  - path: helm-release.yaml
   - path: oci-repository.yaml
