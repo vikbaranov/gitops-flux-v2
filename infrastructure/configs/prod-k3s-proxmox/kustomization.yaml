@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - cert-manager
   - cilium
-  - ../base/envoy-gateway
+  # - ../base/envoy-gateway
