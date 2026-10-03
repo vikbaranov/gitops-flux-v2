@@ -5,8 +5,8 @@ metadata:
   namespace: vaultwarden
 spec:
   parentRefs:
-    - name: internal
-      namespace: envoy-gateway-system
+    - name: int-gw
+      namespace: cilium-gateway
   hostnames:
     - vaultwarden.${cluster_subdomain}
   rules:
