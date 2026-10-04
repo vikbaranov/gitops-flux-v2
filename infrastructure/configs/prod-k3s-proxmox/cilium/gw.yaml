@@ -2,7 +2,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: int-gw
-  namespace: cilium-gateway
+  namespace: cilium-system
 spec:
   gatewayClassName: cilium
   addresses:

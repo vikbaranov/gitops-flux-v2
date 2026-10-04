@@ -6,7 +6,7 @@ metadata:
 spec:
   parentRefs:
     - name: int-gw
-      namespace: cilium-gateway
+      namespace: cilium-system
   hostnames:
     - vaultwarden.${cluster_subdomain}
   rules:
