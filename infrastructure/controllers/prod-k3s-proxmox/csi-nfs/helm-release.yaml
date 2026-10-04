@@ -5,6 +5,8 @@ metadata:
   namespace: csi-nfs
 spec:
   values:
+    controller:
+      enableSnapshotter: false
     storageClass:
       create: true
       name: nfs-csi
