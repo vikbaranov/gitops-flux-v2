@@ -2,6 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: csi-nfs
+  namespace: csi-nfs
 spec:
   values:
     storageClass:
