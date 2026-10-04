@@ -5,8 +5,8 @@ metadata:
   namespace: immich
 spec:
   parentRefs:
-    - name: internal
-      namespace: envoy-gateway-system
+    - name: int-gw
+      namespace: cilium-system
   hostnames:
     - immich.${cluster_subdomain}
   rules:
