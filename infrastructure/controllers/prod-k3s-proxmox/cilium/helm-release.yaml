@@ -4,9 +4,6 @@ metadata:
   name: cilium
   namespace: cilium-system
 spec:
-  dependsOn:
-    - name: gateway-api
-      namespace: flux-system
   values:
     kubeProxyReplacement: true
   
