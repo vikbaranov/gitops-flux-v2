@@ -7,4 +7,4 @@ spec:
   storageClassName: ${storage_class}
   resources:
     requests:
-      storage: 200Gi
+      storage: 160Gi
