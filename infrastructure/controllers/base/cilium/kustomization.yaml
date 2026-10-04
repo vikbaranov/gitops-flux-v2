@@ -4,4 +4,3 @@ resources:
   - oci-repository.yaml
   - helm-release.yaml
   - namespace.yaml
-  - gateway-api-crd.yaml

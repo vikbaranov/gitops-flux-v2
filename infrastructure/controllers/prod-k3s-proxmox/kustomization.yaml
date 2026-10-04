@@ -7,3 +7,4 @@ resources:
   - cilium
   # - victoria-metrics-k8s-stack
   - ../base/topolvm
+  - ../base/gateway-api
