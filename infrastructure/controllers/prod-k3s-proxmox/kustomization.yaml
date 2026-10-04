@@ -5,6 +5,7 @@ resources:
   - cloudnative-pg
   # - envoy-gateway
   - cilium
+  - csi-nfs
   # - victoria-metrics-k8s-stack
   - ../base/topolvm
   - ../base/gateway-api

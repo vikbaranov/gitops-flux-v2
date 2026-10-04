@@ -1,0 +1,19 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: csi-nfs
+spec:
+  values:
+    storageClass:
+      create: true
+      name: nfs-csi
+      parameters:
+        server: 192.168.100.3
+        share: /data
+      reclaimPolicy: Delete
+      volumeBindingMode: Immediate
+      mountOptions:
+        - nfsvers=4.1
+    externalSnapshotter:
+      customResourceDefinitions:
+        enabled: false
