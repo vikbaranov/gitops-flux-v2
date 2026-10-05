@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: adguard-home
+  namespace: adguard-home
+spec:
+  interval: 24h
+  url: oci://ghcr.io/helmforgedev/helm/adguard-home
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy

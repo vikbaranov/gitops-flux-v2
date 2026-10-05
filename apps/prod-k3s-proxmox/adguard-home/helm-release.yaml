@@ -1,0 +1,65 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: adguard-home
+  namespace: adguard-home
+spec:
+  values:
+   config:
+    adGuardHome:
+      http:
+        address: 0.0.0.0:80
+        session_ttl: 720h
+      users:
+        - name: admin
+          password: '$2y$10$DY3Wp8DUnRZ7pY4gvAH.E.smBQsycyBKv4byO.rz8MG6XuqiVOeiG'
+      dns:
+        bind_hosts:
+          - 0.0.0.0
+        port: 53
+        upstream_dns:
+          - 'https://dns.cloudflare.com/dns-query'
+          - 'https://dns.google/dns-query'
+        bootstrap_dns:
+          - 1.1.1.1
+          - 8.8.8.8
+        protection_enabled: true
+        filtering_enabled: true
+        cache_size: 4194304
+      filters:
+        - enabled: true
+          url: 'https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt'
+          name: AdGuard DNS filter
+          id: 1
+        - enabled: true
+          url: 'https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt'
+          name: AdAway Default Blocklist
+          id: 2
+      querylog:
+        enabled: true
+        interval: 720h
+      statistics:
+        enabled: true
+        interval: 168h
+      schema_version: 29
+  
+  service:
+    dns:
+      type: LoadBalancer
+      loadBalancerIP: '192.168.100.25'
+  
+  persistence:
+    conf:
+      enabled: true
+      size: 256Mi
+    work:
+      enabled: true
+      size: 512Mi
+  
+  gateway:
+    enabled: true
+    parentRefs:
+      - name: int-gw
+        namespace: cilium-system
+    hostnames:
+      - adguard.${cluster_subdomain}
