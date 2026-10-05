@@ -6,7 +6,11 @@ metadata:
 spec:
   chart:
     spec:
+      chart: vaultwarden
       version: "0.46.2"
+      sourceRef:
+        kind: HelmRepository
+        name: vaultwarden
   values:
     domain: https://vaultwarden.${cluster_subdomain}
     storage:

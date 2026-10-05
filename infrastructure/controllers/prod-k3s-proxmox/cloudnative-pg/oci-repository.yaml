@@ -4,5 +4,6 @@ metadata:
   name: cloudnative-pg
   namespace: cnpg-system
 spec:
+  url: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg
   ref:
     tag: 0.29.0

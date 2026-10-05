@@ -1,24 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "ignorePaths": [
-    "clusters/**/flux-system/**",
-    "infrastructure/configs/**"
-  ],
-  "kubernetes": {
-    "managerFilePatterns": [
-      "/\\.ya?ml$/"
-    ]
-  },
+  "extends": ["config:recommended"],
+  "ignorePaths": ["clusters/**/flux-system/**", "infrastructure/configs/**"],
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": [
-        "/apps/.+\\.ya?ml$/",
-        "/infrastructure/.+\\.ya?ml$/"
-      ],
+      "managerFilePatterns": ["/apps/prod-k3s-proxmox/.+\\.ya?ml$/"],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+tag:\\s*(?<currentValue>\\S+)"
       ]
@@ -26,27 +13,15 @@
   ],
   "packageRules": [
     {
-      "description": "TopoLVM HelmRelease has no chart version pin",
-      "matchFileNames": [
-        "infrastructure/controllers/base/topolvm/helm-release.yaml"
-      ],
-      "matchDatasources": [
-        "helm"
-      ],
-      "enabled": false
-    },
-    {
       "description": "Keep OCIRepository pins as tags, not tag@digest",
-      "matchManagers": [
-        "flux"
-      ],
-      "pinDigests": false
+      "matchManagers": ["flux"],
+      "pinDigests": true
     }
   ],
   "flux": {
     "managerFilePatterns": [
-      "/apps/.+\\.ya?ml$/",
-      "/infrastructure/controllers/.+\\.ya?ml$/"
+      "/apps/prod-k3s-proxmox/.+\\.ya?ml$/",
+      "/infrastructure/controllers/prod-k3s-proxmox/.+\\.ya?ml$/"
     ]
   }
 }
