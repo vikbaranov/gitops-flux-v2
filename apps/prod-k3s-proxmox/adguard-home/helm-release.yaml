@@ -50,9 +50,11 @@ spec:
       conf:
         enabled: true
         size: 256Mi
+        storageClass: "topolvm"
       work:
         enabled: true
         size: 512Mi
+        storageClass: "topolvm"
     gateway:
       enabled: true
       parentRefs:
