@@ -5,5 +5,4 @@ resources:
   - http-route.yaml
 patches:
   - path: cnpg-cluster.yaml
-  - path: helm-repo.yaml
   - path: helm-release.yaml
