@@ -4,3 +4,4 @@ resources:
   - ../../base/adguard-home
 patches:
   - path: helm-release.yaml
+  - path: oci-repository.yaml
