@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - immich
   - vaultwarden
-  - adguard-home
+  # - adguard-home
   - jellyfin
   - sonarr
   - radarr
