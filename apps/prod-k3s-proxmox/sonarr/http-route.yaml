@@ -1,0 +1,15 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  parentRefs:
+    - name: int-gw
+      namespace: cilium-system
+  hostnames:
+    - sonarr.${cluster_subdomain}
+  rules:
+    - backendRefs:
+        - name: sonarr
+          port: 8989
