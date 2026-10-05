@@ -9,3 +9,4 @@ resources:
   - radarr
   - prowlarr
   - qbittorrent
+  - flaresolverr

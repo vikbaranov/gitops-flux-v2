@@ -1,0 +1,46 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: flaresolverr
+  namespace: media
+spec:
+  values:
+    defaultPodOptions:
+      labels:
+        app.kubernetes.io/part-of: media
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: media
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: ghcr.io/flaresolverr/flaresolverr
+              # renovate: datasource=docker depName=ghcr.io/flaresolverr/flaresolverr
+              tag: v3.5.2
+            env:
+              LOG_LEVEL: info
+              TZ: Etc/UTC
+            ports:
+              - name: http
+                containerPort: 8191
+                protocol: TCP
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+    service:
+      main:
+        controller: main
+        forceRename: flaresolverr
+        type: ClusterIP
+        ports:
+          http:
+            port: 8191

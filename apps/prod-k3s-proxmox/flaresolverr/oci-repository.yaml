@@ -1,0 +1,9 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: flaresolverr
+  namespace: media
+spec:
+  ref:
+    # renovate: datasource=docker depName=ghcr.io/bjw-s-labs/helm/app-template
+    tag: 5.2.1
