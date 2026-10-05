@@ -5,6 +5,7 @@ metadata:
   namespace: adguard-home
 spec:
   values:
+    fullnameOverride: adguard-home
     config:
       adGuardHome:
         http:
