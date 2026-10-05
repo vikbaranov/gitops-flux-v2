@@ -1,0 +1,57 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: radarr
+  namespace: media
+spec:
+  values:
+    defaultPodOptions:
+      labels:
+        app.kubernetes.io/part-of: media
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: media
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: lscr.io/linuxserver/radarr
+              # renovate: datasource=docker depName=lscr.io/linuxserver/radarr
+              tag: 6.4.4.10685-ls319
+            env:
+              PUID: "1000"
+              PGID: "1000"
+              TZ: Etc/UTC
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+    service:
+      main:
+        controller: main
+        forceRename: radarr
+        type: ClusterIP
+        ports:
+          http:
+            port: 7878
+    persistence:
+      config:
+        type: persistentVolumeClaim
+        forceRename: radarr-config
+        accessMode: ReadWriteOnce
+        storageClass: ${storage_class}
+        size: 500Mi
+        globalMounts:
+          - path: /config
+      data:
+        type: persistentVolumeClaim
+        existingClaim: media-data-pvc
+        globalMounts:
+          - path: /data

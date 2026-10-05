@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  interval: 24h
+  url: oci://ghcr.io/bjw-s-labs/helm/app-template
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy

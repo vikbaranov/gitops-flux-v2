@@ -1,0 +1,57 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  values:
+    defaultPodOptions:
+      labels:
+        app.kubernetes.io/part-of: media
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: media
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: lscr.io/linuxserver/sonarr
+              # renovate: datasource=docker depName=lscr.io/linuxserver/sonarr
+              tag: 4.0.20.3014-ls326
+            env:
+              PUID: "1000"
+              PGID: "1000"
+              TZ: Etc/UTC
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+    service:
+      main:
+        controller: main
+        forceRename: sonarr
+        type: ClusterIP
+        ports:
+          http:
+            port: 8989
+    persistence:
+      config:
+        type: persistentVolumeClaim
+        forceRename: sonarr-config
+        accessMode: ReadWriteOnce
+        storageClass: ${storage_class}
+        size: 500Mi
+        globalMounts:
+          - path: /config
+      data:
+        type: persistentVolumeClaim
+        existingClaim: media-data-pvc
+        globalMounts:
+          - path: /data

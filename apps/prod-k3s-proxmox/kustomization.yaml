@@ -4,3 +4,8 @@ resources:
   - immich
   - vaultwarden
   - adguard-home
+  - jellyfin
+  - sonarr
+  - radarr
+  - prowlarr
+  - qbittorrent
