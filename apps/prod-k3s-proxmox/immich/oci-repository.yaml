@@ -6,5 +6,5 @@ metadata:
 spec:
   url: oci://ghcr.io/immich-app/immich-charts/immich
   ref:
-    tag: 0.13.1
-    digest: sha256:b8e890d0d9804759c6b6f3e5f9a850512ca09b9ccc6d137a2f85cbf761981bd1
+    tag: 0.13.3
+    digest: sha256:4b4b2c028a7d7ea0016bd9817b2542638ba035bca96c63643ee9a4118e99af62
