@@ -22,7 +22,7 @@ spec:
             image:
               repository: lscr.io/linuxserver/qbittorrent
               # renovate: datasource=docker depName=lscr.io/linuxserver/qbittorrent
-              tag: 5.2.4_v2.0.15-ls479
+              tag: 5.2.4_v2.0.15-ls479@sha256:b522f9f4b769f8f36d49d22d5eb6a92e9aa18904c6a1830b1439df511ec21983
             env:
               PUID: "1000"
               PGID: "1000"
