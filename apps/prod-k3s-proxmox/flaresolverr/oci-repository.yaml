@@ -6,4 +6,4 @@ metadata:
 spec:
   ref:
     # renovate: datasource=docker depName=ghcr.io/bjw-s-labs/helm/app-template
-    tag: 5.2.1
+    tag: 5.3.0
