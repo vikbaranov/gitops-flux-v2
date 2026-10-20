@@ -7,5 +7,5 @@ spec:
   interval: 24h
   url: oci://ghcr.io/helmforgedev/helm/adguard-home
   ref:
-    tag: 1.5.2
-    digest: sha256:19187987eff9121c1c449e772a07bbedf5073bb07e90f038b56fbe65b2868192
+    tag: 1.5.3
+    digest: sha256:0d923b53ca44ece7c1d1a1e1dd6104fb703dad3229c4e5eae20ccc1c4929d5f1
