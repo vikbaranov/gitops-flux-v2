@@ -9,6 +9,6 @@ spec:
     kind: GitRepository
     name: gateway-api
   path: ./config/crd/standard
-  prune: true
+  prune: false
   wait: true
   timeout: 5m

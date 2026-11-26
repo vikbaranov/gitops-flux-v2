@@ -14,7 +14,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./apps/prod-k3s-proxmox
-  prune: true
+  prune: false
   wait: true
   postBuild:
     substituteFrom:

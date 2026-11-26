@@ -12,7 +12,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure/controllers/prod-k3s-proxmox
-  prune: true
+  prune: false
   wait: true
   postBuild:
     substituteFrom:
@@ -34,7 +34,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./infrastructure/configs/prod-k3s-proxmox
-  prune: true
+  prune: false
   wait: true
   decryption:
     provider: sops
