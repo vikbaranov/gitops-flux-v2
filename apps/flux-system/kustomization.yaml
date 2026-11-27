@@ -4,3 +4,4 @@ resources:
   - flux-instance.yaml
   - artifactgenerator.yaml
   - flux-operator
+  - namespace.yaml
