@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - flux-instance.yaml
   - artifactgenerator.yaml
+  - flux-operator
