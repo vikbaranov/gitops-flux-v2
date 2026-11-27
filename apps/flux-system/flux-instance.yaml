@@ -13,5 +13,5 @@ spec:
     kind: GitRepository
     url: https://github.com/vikbaranov/gitops-flux-v2.git
     ref: refs/heads/main
-    path: clusters/prod-k3s-proxmox
+    path: apps
     pullSecret: github
