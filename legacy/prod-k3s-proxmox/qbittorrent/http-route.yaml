@@ -8,7 +8,7 @@ spec:
     - name: int-gw
       namespace: cilium-system
   hostnames:
-    - qbittorrent.${cluster_subdomain}
+    - qbittorrent.sleepfox.ru
   rules:
     - backendRefs:
         - name: qbittorrent

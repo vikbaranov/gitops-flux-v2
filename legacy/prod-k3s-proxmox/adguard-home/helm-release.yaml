@@ -62,4 +62,4 @@ spec:
         - name: int-gw
           namespace: cilium-system
       hostnames:
-        - adguard.${cluster_subdomain}
+        - adguard.sleepfox.ru

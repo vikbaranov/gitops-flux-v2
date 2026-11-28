@@ -8,7 +8,7 @@ spec:
     - name: int-gw
       namespace: cilium-system
   hostnames:
-    - sonarr.${cluster_subdomain}
+    - sonarr.sleepfox.ru
   rules:
     - backendRefs:
         - name: sonarr

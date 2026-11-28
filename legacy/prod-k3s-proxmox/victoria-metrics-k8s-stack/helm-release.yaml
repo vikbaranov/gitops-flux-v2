@@ -25,4 +25,4 @@ spec:
           - name: internal
             namespace: envoy-gateway-system
         hostnames:
-          - vm.${cluster_subdomain}
+          - vm.sleepfox.ru

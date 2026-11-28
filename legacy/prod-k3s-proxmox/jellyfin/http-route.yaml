@@ -8,7 +8,7 @@ spec:
     - name: int-gw
       namespace: cilium-system
   hostnames:
-    - jellyfin.${cluster_subdomain}
+    - jellyfin.sleepfox.ru
   rules:
     - backendRefs:
         - name: jellyfin

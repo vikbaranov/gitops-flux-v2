@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: vaultwarden
   values:
-    domain: https://vaultwarden.${cluster_subdomain}
+    domain: https://vaultwarden.sleepfox.ru
     storage:
       data:
         size: 1Gi

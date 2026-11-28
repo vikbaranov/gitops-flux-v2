@@ -8,7 +8,7 @@ spec:
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-prod
-  commonName: "${cluster_subdomain}"
+  commonName: "sleepfox.ru"
   dnsNames:
-  - "*.${cluster_subdomain}"
-  - "${cluster_subdomain}"
+  - "*.sleepfox.ru"
+  - "sleepfox.ru"

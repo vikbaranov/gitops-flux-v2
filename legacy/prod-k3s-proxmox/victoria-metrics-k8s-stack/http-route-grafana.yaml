@@ -8,7 +8,7 @@ spec:
     - name: internal
       namespace: envoy-gateway-system
   hostnames:
-    - grafana.${cluster_subdomain}
+    - grafana.sleepfox.ru
   rules:
     - backendRefs:
         - name: victoria-metrics-k8s-stack-grafana
