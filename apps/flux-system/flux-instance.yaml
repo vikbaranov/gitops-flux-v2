@@ -6,7 +6,8 @@ metadata:
 spec:
   distribution:
     version: "2.x"
-    registry: ghcr.io/fluxcd
+    registry: "ghcr.io/fluxcd"
+    artifact: "oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests"
   sync:
     kind: GitRepository
     url: https://github.com/vikbaranov/gitops-flux-v2.git
