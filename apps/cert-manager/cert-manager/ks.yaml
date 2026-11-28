@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cert-manager
+spec:
+  interval: 1h
+  path: ./apps/cert-manager/cert-manager/app
+  prune: true
+  sourceRef:
+    kind: ExternalArtifact
+    name: cert-manager
+    namespace: flux-system
+  targetNamespace: cert-manager
+  wait: true
